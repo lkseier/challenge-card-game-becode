@@ -1,66 +1,50 @@
+import random
+from typing import List
 from utils.card import Card
 class Player:
-    def __init__(self, cards, turn_count=0, number_of_cards=0, history=None):
-        self.cards = []  # Initialize an empty list for cards
-        self.turn_count = turn_count
-        self.number_of_cards = number_of_cards
-        self.history = history
-    def receive_card(self, card):
-            """Receives a card and adds it to the player's hand."""
-            self.hand.extend([card])
-            self.number_of_cards += 1 # Update the number of cards
-            # Add the card to the history
-    def play(self, card):
-        """Plays a card from the player's hand."""
-        if card in self.cards:
-            self.cards.remove(card)
-            self.number_of_cards -= 1 # Update the number of cards
-            # Add the card to the history
-            self.history.append(card)
-        else:
-            raise ValueError("Card not in hand.") # Raise an error if the card is not in hand
-    def __str__(self):
-        """String representation of the player."""
-        return f"Player with {self.number_of_cards} cards: {', '.join(str(card) for card in self.cards)}"
-    
+    """
+    Class representing a player in the card game.
 
-class Deck:
-        def __init__(self):
-                self.cards = [] # Initialize an empty list for cards
-                self.fill_deck() # Initialize the deck with cards
-        def __str__(self): # String representation of the card
-            if self.icon == "J":
-                return f"{self.color} {self.icon} {self.value} (Jack)"
-            elif self.icon == "Q":
-                return f"{self.color} {self.icon} {self.value} (Queen)"
-            elif self.icon == "K":
-                return f"{self.color} {self.icon} {self.value} (King)"
-            elif self.icon == "A":
-                return f"{self.color} {self.icon} {self.value} (Ace)"
-            else:return f"{self.color} {self.icon} {self.value}"
-        def card(self):
-            """Initializes the deck with cards."""
-            self.cards = []
-            self.fill_deck()
-        def fill_deck(self):
-            """Fills the deck with cards of different colors and values."""
-            icons = ["♥", "♦", "♣", "♠"]
-            values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
-            for icon in icons:
-                 for value in values:
-                     self.cards.append(Card(icon, value))
-        def shuffle(self):
-                """Shuffles the deck of cards."""
-                import random
-                random.shuffle(self.cards)
-        def distribute_cards(self, players, number_of_cards):
-            """Distributes cards to players."""
-            for _ in range(number_of_cards):
-                 for player in players:
-                      if self.cards:
-                        player.receive_card(self.draw_card())
-            else:
-                raise ValueError("Not enough cards to distribute.")
+    :param name: The name of the player.
+    """
+    def __init__(self, name: str):
+        self.name: str = name
+        self.score: int = 0
+        self.cards: List[Card] = []  # Initialize an empty list for cards
+        self.turn_count: int = 0
+        self.number_of_cards: int = 0  # Initialize the number of cards
+        self.history: List[Card] = []
+        
+
+    def play(self) -> Card:
+        """
+        Allows the player to choose a card to play (interactive).
+        """
+        if not self.cards:
+            raise ValueError(f"{self.name} has no cards left to play!")
+
+        print(f"\n{self.name}'s hand:")
+        for index, card in enumerate(self.cards):
+            print(f"{index + 1}: {card}")
+
+        while True:
+            try:
+                choice = int(input(f"{self.name}, choose a card to play (1-{len(self.cards)}): "))
+                if 1 <= choice <= len(self.cards):
+                    selected_card = self.cards.pop(choice - 1)
+                    self.history.append(selected_card)
+                    self.turn_count += 1
+                    print(f"{self.name} played: {selected_card.value} {selected_card.icon}")
+                    return selected_card
+                else:
+                    print("Invalid number. Try again.")
+            except ValueError:
+                print("Please enter a valid number.")
+
+
+    def __str__(self) -> str:
+        return f"Player {self.name} with {len(self.cards)} cards"
+
             
     
     
